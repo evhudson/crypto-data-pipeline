@@ -12,19 +12,22 @@ logging.basicConfig(
 
 API_URL = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd"
 
-def fetch_prices():
-    response = requests.get(API_URL, timeout=10)
-    response.raise_for_status()
-    return response.json()
-
-def insert_prices(data):
-    conn = psycopg2.connect(
+def get_connection():
+    return psycopg2.connect(
         host="localhost",
         database="crypto_db",
         user="postgres",
         password="7566",
         port="5432"
     )
+
+def fetch_prices():
+    response = requests.get(API_URL, timeout=10)
+    response.raise_for_status()
+    return response.json()
+
+def insert_prices(data):
+    conn = get_connection()
     cur = conn.cursor()
 
     for coin, value in data.items():

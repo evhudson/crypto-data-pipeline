@@ -1,6 +1,10 @@
 import psycopg2
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # --------------------------------------------------
 # Database Connection
@@ -11,11 +15,11 @@ from plotly.subplots import make_subplots
 # --------------------------------------------------
 def get_connection():
     return psycopg2.connect(
-        host="localhost",
-        database="crypto_db",
-        user="postgres",
-        password="7566",
-        port="5432"
+        host=os.getenv("DB_HOST"),
+        database=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        port=os.getenv("DB_PORT")
     )
 
 

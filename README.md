@@ -1,57 +1,147 @@
-# crypto-data-pipeline
 # Crypto Data Pipeline
 
 ## Overview
-This project is an end-to-end data pipeline that ingests cryptocurrency price data from a public API and stores it in PostgreSQL for time-series analysis.
 
-The pipeline fetches real-time prices for Bitcoin, Ethereum, and Solana using the CoinGecko API and writes them into a relational database for querying and analysis.
+This project is an end-to-end data engineering pipeline that ingests cryptocurrency market data from the CoinGecko API, stores it in PostgreSQL, performs analytical transformations using SQL, and generates an interactive dashboard for visualization.
 
----
+The pipeline tracks Bitcoin, Ethereum, and Solana prices over time, enabling historical analysis and trend monitoring.
 
 ## Architecture
 
-Data flows through the system as follows:
+```text
+CoinGecko API
+       │
+       ▼
+ Python ETL Pipeline
+       │
+       ▼
+ PostgreSQL Database
+       │
+       ▼
+ SQL Analytics Views
+       │
+       ▼
+ Plotly Dashboard
+```
 
-API (CoinGecko) → Python Ingestion Script → PostgreSQL Database → SQL Queries
+## Features
 
----
+* Automated cryptocurrency price ingestion
+* PostgreSQL time-series storage
+* Historical price tracking
+* SQL analytical views
+* 7-period moving average calculations
+* Interactive Plotly dashboard
+* Environment variable based configuration
 
 ## Tech Stack
 
-- Python
-- PostgreSQL
-- psycopg2
-- requests
-
----
+* Python
+* PostgreSQL
+* psycopg2
+* requests
+* Plotly
+* python-dotenv
 
 ## Database Schema
 
-Table: `prices`
+### prices
 
-| Column      | Type                | Description                  |
-|------------|---------------------|------------------------------|
-| id         | SERIAL PRIMARY KEY  | Unique record ID             |
-| coin       | TEXT                | Cryptocurrency name          |
-| price_usd  | DOUBLE PRECISION    | Price in USD                 |
-| created_at | TIMESTAMP           | Time of data ingestion       |
+| Column     | Type               | Description              |
+| ---------- | ------------------ | ------------------------ |
+| id         | SERIAL PRIMARY KEY | Unique record identifier |
+| coin       | TEXT               | Cryptocurrency name      |
+| price_usd  | DOUBLE PRECISION   | Price in USD             |
+| created_at | TIMESTAMP          | Ingestion timestamp      |
 
-Index:
-- `(coin, created_at DESC)` for efficient time-series queries
+### Indexes
 
----
+```sql
+CREATE INDEX idx_prices_coin_timestamp
+ON prices (coin, created_at DESC);
+```
 
-## How It Works
+## Analytics
 
-1. Fetches crypto prices from CoinGecko API
-2. Parses JSON response
-3. Inserts records into PostgreSQL
-4. Stores timestamped price data for historical tracking
+The project includes SQL-based analytical views that calculate rolling metrics such as:
 
----
+* 7-period moving averages
+* Historical price trends
+* Time-series analysis
 
-## How to Run
+Example query:
 
-### 1. Install dependencies
+```sql
+SELECT
+    coin,
+    AVG(price_usd) AS average_price
+FROM prices
+GROUP BY coin;
+```
+
+## Dashboard
+
+The dashboard visualizes:
+
+* Bitcoin price trends
+* Ethereum price trends
+* Solana price trends
+* 7-period moving averages
+* Last 24 hours of market activity
+
+The dashboard is generated automatically as `dashboard.html`.
+
+## Installation
+
+### Clone the repository
+
 ```bash
-pip3 install requests psycopg2-binary
+git clone https://github.com/evhudson/crypto-data-pipeline.git
+cd crypto-data-pipeline
+```
+
+### Install dependencies
+
+```bash
+pip3 install -r requirements.txt
+```
+
+### Configure environment variables
+
+Create a `.env` file:
+
+```env
+DB_HOST=localhost
+DB_NAME=crypto_db
+DB_USER=postgres
+DB_PASSWORD=your_password
+DB_PORT=5432
+```
+
+## Running the Pipeline
+
+Run the ingestion pipeline:
+
+```bash
+python3 ingest.py
+```
+
+Generate the dashboard:
+
+```bash
+python3 dashboard.py
+```
+
+Open `dashboard.html` in a browser to view the dashboard.
+
+## Future Improvements
+
+* Automated scheduling with Airflow
+* Data quality testing
+* Containerization with Docker
+* dbt transformation layer
+* Cloud data warehouse integration
+* Spark-based processing
+
+```
+```

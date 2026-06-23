@@ -2,6 +2,10 @@ import requests
 import psycopg2
 from datetime import datetime
 import logging
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # setup logging
 logging.basicConfig(
@@ -14,12 +18,12 @@ API_URL = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,so
 
 def get_connection():
     return psycopg2.connect(
-        host="localhost",
-        database="crypto_db",
-        user="postgres",
-        password="7566",
-        port="5432"
-    )
+    host=os.getenv("DB_HOST"),
+    database=os.getenv("DB_NAME"),
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD"),
+    port=os.getenv("DB_PORT")
+)
 
 def fetch_prices():
     response = requests.get(API_URL, timeout=10)
